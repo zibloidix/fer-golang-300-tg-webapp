@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/vue.js"></script>
+    <link href="/css/app.css" rel="stylesheet">
+    <script src="/js/app.js"></script>
+    <title>Сервис запись на прием к врачу</title>
+</head>
+<body>
+    <!-- MAIN CONTAINER: START -->
+    <div class="container" id="app">
+        <!-- wellcome-to-service -->
+        <div class="row pt-3" id="wellcome-to-service" v-if="state == 'wellcome-to-service'">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4 ">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2 class="py-4 border-bottom">Запись на приём к врачу</h2>
+                                <p class="py-2"></p>
+                                <p class="pt-4">Записать можно себя, ребёнка или другого человека.</p>
+                                <p class="pt-2">Проверьте данные полиса ОМС, выберите поликлинику, врача, дату и время посещения. Информация о записи будет доступна в личном кабинете</p>
+                                <p class="pt-2">Записаться можно к врачам из списка. Запись к профильному специалисту, на медицинское обследование или процедуру возможна по направлению, которое выдает терапевт или врач общей практики</p>
+                                <p class="pt-2">Запись на приём к врачу доступна только в регионе прикрепления к поликлинике</p>
+                                <p class="py-2"></p>
+                            </div>
+                        </div>
+                        <div class="row pt-4">
+                            <div class="col-12">
+                                <div class="d-grid gap-2 col-6 mx-auto">
+                                    <button class="btn btn-primary" type="button" v-on:click="setScreenState('get-patient-data')">
+                                        Начать
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-12 py-3 text-center">
+                                <button type="button" class="btn btn-link" v-on:click="setScreenState('appointment-history-list')">
+                                    <span class="pe-3">
+                                        История записей к врачу
+                                    </span>
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                          </svg>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- get-patient-data -->
+        <div class="row pt-4" id="get-patient-data" v-if="state == 'get-patient-data'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <kbd class="px-2 bg-primary">1</kbd><span class="ps-2 fw-bold">Указать данные пациента</span>
+                            </div>
+                        </div>
+                        <div class="btn-group d-flex pt-3" role="group" aria-label="Выберете кого записать">
+                            <input type="radio" class="btn-check" name="forMeOrOther" id="forMe" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="forMe">Вызвать себе</label>
+                          
+                            <input type="radio" class="btn-check" name="forMeOrOther" id="forOther" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="forOther">Вызвать другому</label>
+                        </div>
+                        <div class="row pt-3">
+                            <div class="col-12">
+                                <label class="form-label">Фамилия</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-12">
+                                <label class="form-label">Имя</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-12">
+                                <label class="form-label">Отчество</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-12">
+                                <label class="form-label">Дата рождения</label>
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-check form-switch pt-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                            <label class="form-check-label" for="flexSwitchCheckChecked">Пол: Женский</label>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-12">
+                                <label class="form-label">СНИЛС</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-4">
+                                <label class="form-label">Серия</label>
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="col-8">
+                                <label class="form-label">Номер полиса</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="border-bottom my-4"></div>
+
+                        <div class="row">
+                            <div class="d-grid gap-2 col-6 mx-auto">
+                                <button class="btn btn-primary" type="button" v-on:click="setScreenState('get-mo-info-extended')">
+                                    Далее
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- get-mo-info-extended -->
+        <div class="row pt-4" id="get-mo-info-extended" v-if="state == 'get-mo-info-extended'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <kbd class="px-2 bg-primary">2</kbd><span class="ps-2 fw-bold">Выбрать медицинскую организацию</span>
+                            </div>
+                        </div>
+                        <div class="row pt-4">
+                            <div class="col-12">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="Адрес или название" aria-describedby="hospital-search-addon">
+                                    <span class="input-group-text" id="hospital-search-addon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                        </svg>
+                                    </span>
+                                  </div>
+                            </div>
+                        </div>
+
+
+                        <div class="accordion accordion-flush" id="hospital-list">
+                            <div class="accordion-item" v-for="hospital in hospitals">
+                              <h2 class="accordion-header" v-bind:id="'header_' + hospital.MO_Id">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" v-bind:data-bs-target="'#target' + hospital.MO_Id" aria-expanded="true" v-bind:aria-controls="'#target' + hospital.MO_Id">
+                                  {{hospital.Organization_Name}}
+                                </button>
+                              </h2>
+                              <div v-bind:id="'target' + hospital.MO_Id" class="accordion-collapse collapse"  v-bind:aria-labelledby="'header_' + hospital.MO_Id" data-bs-parent="#hospital-list">
+                                <div class="accordion-body">
+                                    <div>
+                                        <div class="text-secondary">Адрес</div>
+                                        <div>{{hospital.Address_MO}}</div>
+                                    </div>
+                                    <div class="pt-3">
+                                        <div class="text-secondary">Телефон</div>
+                                        <div>{{hospital.Reg_Phone}}</div>
+                                    </div>
+                                    <div class="row pt-4 pb-3">
+                                        <div class="col-12 pt-1">
+                                            <div class="d-grid gap-2 col-6 mx-auto">
+                                                <button class="btn btn-primary" type="button" v-on:click="setScreenState('get-service-specs-info')">
+                                                    <span>Выбрать</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- get-service-specs-info -->
+        <div class="row pt-4" id="get-service-specs-info" v-if="state == 'get-service-specs-info'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <kbd class="px-2 bg-primary">3</kbd><span class="ps-2 fw-bold">Выбрать специальность врача</span>
+                            </div>
+                        </div>
+                        <div class="row py-4">
+                            <div class="col-12">
+                                <div class="list-group">
+                                    <button type="button" 
+                                            class="list-group-item list-group-item-action py-3" 
+                                            v-for="service in services"
+                                            v-on:click="setScreenState('get-resource-info')">
+                                        <span>{{service.Service_Name}}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- get-resource-info -->
+        <div class="row pt-4" id="get-resource-info" v-if="state == 'get-resource-info'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <kbd class="px-2 bg-primary">4</kbd><span class="ps-2 fw-bold">Выбрать врача</span>
+                            </div>
+                        </div>
+                        <div class="row py-4">
+                            <div class="col-12">
+                                <div class="list-group">
+                                    <button type="button" 
+                                            class="list-group-item list-group-item-action py-3" 
+                                            v-for="resource in resources"
+                                            v-on:click="setScreenState('get-schedule-info')">
+                                        <span>{{resource.Resource_Name}}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- get-schedule-info -->
+        <div class="row pt-4" id="get-schedule-info" v-if="state == 'get-schedule-info'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <kbd class="px-2 bg-primary">5</kbd><span class="ps-2 fw-bold">Выбрать дату и время</span>
+                            </div>
+                        </div>
+                        <div class="row py-4">
+                            <div class="col-12">
+                                <div class="list-group">
+                                    <button type="button" 
+                                            class="list-group-item list-group-item-action py-3" 
+                                            v-for="slot in slots"
+                                            v-on:click="setScreenState('create-appointment')">
+                                        <span>{{slot.VisitTime}}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- create-appointment -->
+        <div class="row pt-4" id="create-appointment" v-if="state == 'create-appointment'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <kbd class="px-2 bg-primary">6</kbd><span class="ps-2 fw-bold">Подтвердить выбор</span>
+                            </div>
+                        </div>
+                        <div class="row py-4">
+                            <div class="col-12">
+                                <h3>ГБУЗ Городская поликлиника №2 г.Южно-Сахалинска</h3>
+                                <p>Адрес: Южно-Сахалинск, пр-кт Мира, 85</p>
+                                <div class="pt-3">
+                                    <div class="fw-bold">Специальность</div>
+                                    <div>Врач-терапевт</div>
+                                </div>
+
+                                <div class="pt-3">
+                                    <div class="fw-bold">Врач</div>
+                                    <div>Хауз Грегори Михайлович</div>
+                                </div>
+
+                                <div class="pt-3">
+                                    <div class="fw-bold">Дата и время</div>
+                                    <div>25 февраля 2022 года в 17:30, пятница</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="d-grid gap-2 col-8 mx-auto py-4">
+                                <button class="btn btn-primary" type="button" v-on:click="setScreenState('appointment-full-details')">
+                                    Записаться к врачу
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- appointment-full-details -->
+        <div class="row pt-4" id="appointment-full-details" v-if="state == 'appointment-full-details'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <span class="ps-2 fw-bold">Информация о записи к врачу</span>
+                            </div>
+                        </div>
+                        <div class="row pt-4">
+                            <div class="col-12">
+                                <h3>
+                                    <span class="pe-2">
+                                        Запись к врачу №123456
+                                    </span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="row py-4 border-bottom">
+                            <div class="col-6 d-grid gap-2 mx-auto ">
+                                <button type="button" class="btn btn-outline-secondary" v-on:click="setScreenState('cancel-appointment')">Отменить</button>
+                            </div>
+                            <div class="col-6 d-grid gap-2 mx-auto ">
+                                <button type="button" class="btn btn-outline-primary">В календарь</button>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="pt-3">
+                                    <div class="fw-bold">Дата и время</div>
+                                    <div>25 февраля 2022 года в 17:30, пятница</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pb-4">
+                            <div class="col-12">
+                                <div class="pt-3">
+                                    <div class="text-secondary">Врач-терапевт</div>
+                                    <div>Хауз Грегори Михайлович</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pt-4 border-top">
+                            <div class="col-12">
+                                <div style="position:relative;overflow:hidden;"><a href="https://yandex.ru/maps/org/gorodskaya_poliklinika_2/1054357597/?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Городская поликлиника № 2</a><a href="https://yandex.ru/maps/80/yuzhno-sakhalinsk/category/adult_outpatient_clinic/184106014/?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:14px;">Поликлиника для взрослых в Южно‑Сахалинске</a><iframe src="https://yandex.ru/map-widget/v1/-/CCU5Z4wc3D" width="560" height="400" frameborder="1" allowfullscreen="true" style="position:relative;"></iframe></div>
+                            </div>
+                        </div>
+
+                        <div class="row  pt-3 pb-2">
+                            <div class="col-6 d-grid gap-2 mx-auto">
+                                <button type="button" 
+                                        class="btn btn-primary" 
+                                        v-on:click="setScreenState('wellcome-to-service')">На главную</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer py-3 text-center">
+                        <button type="button" class="btn btn-link" v-on:click="setScreenState('appointment-history-list')">
+                            <span class="pe-3">
+                                История записей к врачу
+                            </span>
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                  </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- appointment-history-list -->
+        <div class="row pt-4" id="appointment-history-list" v-if="state == 'appointment-history-list'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <span class="ps-2 fw-bold">История записей к врачу</span>
+                            </div>
+                        </div>
+
+                        <div class="row pt-4">
+                            <div class="col-12">
+                                <div class="input-group pb-2 mb-3">
+                                    <input type="text" class="form-control" placeholder="Поиск" aria-describedby="appointment-search-addon">
+                                    <span class="input-group-text" id="appointment-search-addon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                        </svg>
+                                    </span>
+                                  </div>
+                            </div>
+                        </div>
+
+                        <div class="row py-3 border-top" v-for="appointment in appointments"  v-on:click="setScreenState('appointment-full-details')">
+                            <div class="col-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
+                                    <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
+                                    <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                </svg>
+                            </div>
+                            <div class="col-11">
+                                <!-- <div class="text-truncate text-success" v-if="appointment.isActive">{{appointment.title}}</div> -->
+                                <div class="text-truncate fw-bold">{{appointment.title}}</div>
+                                <div>{{appointment.date}}</div>
+                                <div class="text-secondary">{{appointment.hospital}}</div>
+                            </div>
+                        </div>
+
+                        <div class="row border-top pt-4 pb-3">
+                            <div class="col-12 text-center">
+                                <button type="button" class="btn btn-link">Показать больше</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- cancel-appointment -->
+        <div class="row pt-4" id="cancel-appointment" v-if="state == 'cancel-appointment'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-4">
+                            <div class="col-12 text-primary">
+                                <span class="ps-2 fw-bold">Отмена записи к врачу</span>
+                            </div>
+                        </div>
+                        <div class="row py-4">
+                            <div class="col-12 py-4 text-center">
+                                <h4 class="py-4">Вы уверены, что хотите отменить запись на приём?</h4>
+                            </div>
+                        </div>
+                        <div class="row  pt-3 pb-2">
+                            <div class="col-6 d-grid gap-2 mx-auto">
+                                <button type="button" 
+                                        class="btn btn-primary" 
+                                        v-on:click="setScreenState('appointment-canceled-full-details')">Отменить запись</button>
+                            </div>
+                        </div>
+                        <div class="row  pt-2 pb-2">
+                            <div class="col-6 d-grid gap-2 mx-auto">
+                                <button type="button" 
+                                        class="btn btn-outline-primary" 
+                                        v-on:click="setScreenState('wellcome-to-service')">Закрыть</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- appointment-canceled-full-details -->
+        <div class="row pt-4" id="appointment-canceled-full-details" v-if="state == 'appointment-canceled-full-details'">
+            <div class="col-12">
+                <div class="row pb-4">
+                    <div class="col-12" v-on:click="setScreenStateBack()">
+                        <span class="pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                        </span>
+                        <span ps-4>Назад</span>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row border-bottom pb-3">
+                            <div class="col-12 text-primary">
+                                <span class="ps-2 fw-bold">Информация о записи к врачу</span>
+                            </div>
+                        </div>
+                        <div class="row pt-4">
+                            <div class="col-12">
+                                <h3>
+                                    <span class="pe-2">
+                                        Запись к врачу №123456
+                                    </span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="row py-4 border-bottom">
+                            <div class="col-1 mx-auto text-danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
+                                    <path fill-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/>
+                                </svg>
+                            </div>
+                            <div class="col-10 mx-auto">
+                                <div class="text-danger"></div>Запись отменена заявителем
+                                <div class="text-secondary">19.02.2022, 13:08 </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="pt-3">
+                                    <div class="fw-bold">Дата и время</div>
+                                    <div>25 февраля 2022 года в 17:30, пятница</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pb-4">
+                            <div class="col-12">
+                                <div class="pt-3">
+                                    <div class="text-secondary">Врач-терапевт</div>
+                                    <div>Хауз Грегори Михайлович</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row  pt-3 pb-2">
+                            <div class="col-6 d-grid gap-2 mx-auto">
+                                <button type="button" 
+                                        class="btn btn-primary" 
+                                        v-on:click="setScreenState('wellcome-to-service')">На главную</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer py-3 text-center">
+                        <button type="button" class="btn btn-link" v-on:click="setScreenState('appointment-history-list')">
+                            <span class="pe-3">
+                                История записей к врачу
+                            </span>
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                  </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- MAIN CONTAINER: START -->
+</body>
+</html>
